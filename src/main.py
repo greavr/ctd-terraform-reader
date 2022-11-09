@@ -3,7 +3,7 @@ from typing import List
 import os, shutil, json
 
 # Variables
-project_directory = "/home/rgreaves/code/opencloud"
+project_directory = "/usr/local/google/home/rgreaves/code/data-cloud"
 terraform_folder = "demo/terraform"
 terraform_project = "keep-empty-project"
 firestore_project = "rgreaves-gke-chaos"
@@ -35,6 +35,14 @@ def save_values_to_firestore(save_data: dict, save_project: str):
         print(f"-> Saving values for repo: {a_repo}")
         doc_ref = db.collection(u'terraform_resources').document(a_repo)
         doc_ref.set(save_data[a_repo])
+
+def save_values_locally(save_data: dict):
+    """ This functions saves each repo contents to local file"""
+    # Itterate over dictonary
+    for a_repo in save_data:
+        json_object = json.dumps(save_data[a_repo], indent=4)
+        with open(f"{a_repo}.json", "w") as outfile:
+            outfile.write(json_object)
 
 
 def build_terraform_repo_list(dir_path: str = "/home/rgreaves") -> List[str]:
@@ -138,3 +146,4 @@ if __name__ == "__main__":
 
     # Finally write data to firestore
     save_values_to_firestore(save_data=deployed_resources_per_repo, save_project=firestore_project)
+    save_values_locally(save_data=deployed_resources_per_repo)
